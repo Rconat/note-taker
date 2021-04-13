@@ -10,7 +10,7 @@ module.exports = function (app) {
     })
 
     // app.post
-    app.post('/api.notes', (req, res) => {
+    app.post('/api/notes', (req, res) => {
         const addNote = req.body
         addNote.id = uuid.v4()
 
@@ -27,4 +27,19 @@ module.exports = function (app) {
     })
 
     // app.delete
+    app.delete('/api/notes/:id', (req, res) => {
+        fs.readFile('./db/db.json', 'utf8', (err, data) => {
+            if (err) throw err
+
+            const notes = JSON.parse(data)
+            let results = notes.filter(obj => {
+                return obj.id !== req.params.id
+            })
+
+            fs.writeFile('./db/db.json', JSON.stringify(results), (err, data) => {
+                if (err) throw err
+                res.json(results)
+            })
+        })
+    })
 }
